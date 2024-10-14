@@ -4,5 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WatsonX Query Interface</title>
-    <h1>Hello NAIFsssssss</h1>
 </head>
+<body>
+    <h1>Ask a Question</h1>
+    <form id="queryForm">
+        <input type="text" id="userQuery" placeholder="Enter your query" required>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response"></div>
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = document.getElementById('userQuery').value;
+
+            try {
+                const response = await fetch('https://2330-149-81-110-210.ngrok-free.app/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                document.getElementById('response').innerText = JSON.stringify(data.response);
+            } catch (error) {
+                document.getElementById('response').innerText = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
