@@ -3,40 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WatsonX Query Interface</title>
+    <title>Allam - Lit</title>
+
+    <!-- Ionic Framework -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+
+    <!-- Bootstrap CSS for responsive layout -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Custom Styling -->
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #000066, #4B0082);
+            color: #fff;
+        }
+
+        /* Top-left section for logo and dropdown */
+        #top-section {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #logo img {
+            width: 80px;
+        }
+
+        /* Chat container styling */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            padding: 20px;
+        }
+
+        /* Message container styling */
+        #responseContainer {
+            overflow-y: auto;
+            margin-bottom: 10px;
+            max-height: 70vh;
+        }
+
+        /* User message styling */
+        .user-message {
+            background-color: #4a4a4a;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            text-align: right;
+            color: #e0e0e0;
+            direction: rtl;
+        }
+
+        /* Bot message styling */
+        .bot-message {
+            background-color: #323232;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            text-align: right;
+            color: #ffffff;
+            direction: rtl;
+            white-space: pre-wrap;
+        }
+
+        /* Input section styling */
+        .fixed-input {
+            display: flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            max-width: 700px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        ion-input {
+            flex-grow: 1;
+            --background: #4a4a4a;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        ion-button {
+            margin-left: 10px;
+        }
+        
+        #list-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: right;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            direction: rtl;
+        }
+    </style>
 </head>
 <body>
-    <h1>Ask a Question</h1>
-    <form id="queryForm">
-        <input type="text" id="userQuery" placeholder="Enter your query" required>
-        <button type="submit">Submit</button>
-    </form>
-    <div id="response"></div>
+    
+    <div id="list-container">
+        <ion-list>
+            <ion-list-header><h3>أمثلة</h3></ion-list-header>
+            <ion-item>قم بكتابة الشعر التالي كتابة عروضية : مَنْ رُزِقَ الْعَقْلَ فَذُو نِعْمَةٍ /// آثَارُهَا وَاضِحَةٌ ظَاهِرَهْ</ion-item>
+            <ion-item>قم بكتابة الشعر التالي كتابة عروضية : إِنَّمَا الدُّنْيَا بَلَاءٌ وَكَدٌّ ... وَاكْتِئَابٌ قَدْ يَسُوقُ اكْتِئَابَا</ion-item>
+            <ion-item>عَلَى قَدرِ أَهْلِ اَلْعَزمِ تَأتِي اَلعَزَائِمُ 
+                <br> وَتَأتِي عَلَى قَدرِ اَلْكِرَامِ الْمَكَارِمُ
+            </ion-item>
+            <ion-item>اعْلَمُوا أَنِّي لَكُمْ حَافِظٌ ... شَاهِدًا مَا كُنْتُ أَوْ غَائِبَا</ion-item>
+        </ion-list>
+    </div>
+
+    <!-- Top-left section for logo and dropdown -->
+    <div id="top-section">
+        <div id="logo">
+            <img src="https://allam.tuwaiq.edu.sa/_next/image?url=%2Fallam-logo.png&w=640&q=75" alt="Logo">
+        </div>
+        <div id="version-dropdown">
+            <ion-select id="version" interface="popover" placeholder="LLM Version" value="v2">
+                <ion-select-option value="v1">Allam</ion-select-option>
+                <ion-select-option value="v2">Allam-literature</ion-select-option>
+            </ion-select>
+        </div>
+    </div>
+
+    <!-- Chat interface container -->
+    <div class="container chat-container">
+        <div class="row">
+            <div id="responseContainer" class="col-12 col-lg-8 offset-lg-2"></div>
+        </div>
+    </div>
+
+    <!-- Input area for user query -->
+    <div class="fixed-input">
+        <ion-input id="word" placeholder="الرجاء إدخال البيت الشعري الذي تريد تحليله" clear-input></ion-input>
+        <ion-button id="sendButton" color="primary" onclick="sendQuery()">إرسال</ion-button>
+    </div>
 
     <script>
-document.getElementById('queryForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const query = document.getElementById('userQuery').value;
+        async function sendQuery() {
+            const listContainer = document.getElementById('list-container');
+            listContainer.style.display = 'none';  // Hide the list container
+            const wordInput = document.getElementById('word');
+            const versionInput = document.getElementById('version');
+            const responseContainer = document.getElementById('responseContainer');
 
-    try {
-        const response = await fetch('https://eee2-149-81-110-210.ngrok-free.app/api/query', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({ query })
-        });
+            // Get the user query and version
+            const userQuery = wordInput.value.trim();
+            const selectedVersion = versionInput.value || "v1";  // Set default to "v1"
 
-        if (!response.ok) throw new Error('Network response was not ok');
+            if (!userQuery) return;
 
-        const data = await response.json();
-        document.getElementById('response').innerText = JSON.stringify(data.response);
-    } catch (error) {
-        document.getElementById('response').innerText = 'Error: ' + error.message;
-    }
-});
+            // Add user message to the chat
+            const userMessage = document.createElement('div');
+            userMessage.classList.add('user-message');
+            userMessage.textContent = userQuery;
+            responseContainer.appendChild(userMessage);
 
+            // Clear the input field
+            wordInput.value = '';
+
+            // Scroll to the bottom of the chat container
+            responseContainer.scrollTop = responseContainer.scrollHeight;
+
+            // Send the query to the server and get response
+            try {
+                const response = await fetch("https://UserNaif.pythonanywhere.com/process_text", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ word: userQuery, version: selectedVersion })
+                });
+
+                const result = await response.json();
+                const botResponse = result.processed_text || "Sorry, I couldn't get a response.";
+
+                // Display bot's response with typing effect
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('bot-message');
+                responseContainer.appendChild(botMessage);
+
+                // Typing effect function with speed parameter applied correctly
+                function typeEffect(element, text, speed = 10) {
+                    let index = 0;
+
+                    function addCharacter() {
+                        element.textContent += text[index];
+                        index++;
+
+                        if (index < text.length) {
+                            setTimeout(addCharacter, speed);
+                        }
+                    }
+                    addCharacter();
+                }
+
+                // Apply the typing effect with the specified speed
+                typeEffect(botMessage, botResponse, 10); // Adjust speed here as desired
+
+                // Scroll to the bottom of the chat container
+                responseContainer.scrollTop = responseContainer.scrollHeight;
+
+            } catch (error) {
+                console.error("Error fetching response:", error);
+                
+                // Show error message in chat
+                const botMessage = document.createElement('div');
+                botMessage.classList.add('bot-message');
+                botMessage.textContent = "Error: Unable to reach server.";
+                responseContainer.appendChild(botMessage);
+
+                responseContainer.scrollTop = responseContainer.scrollHeight;
+            }
+        }
     </script>
 </body>
 </html>
